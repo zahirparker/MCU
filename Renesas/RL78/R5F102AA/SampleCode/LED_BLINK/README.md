@@ -5,7 +5,9 @@ LED Blink project for R5F102AA
 LED is connected to P3.1 with Anode connected to P3.1 and cathode connected to ground 
 
  **Device** : R5F102AA
+
  **Tools** : e2 studio v3.0.0.22
+
         KPIT GNU RL78-ELF ToolChain v14.02
         
 Code was generated using Applilet Code generator from within e2 studio
@@ -19,7 +21,7 @@ Settings used for Code generation
   * Internal Oscillator Freq: 24MHz
 
   * Interval Timer working on 15KHz 
-  * Configured to generate an interrupt every 100 ms
+  * Interval Timer Configured to generate an interrupt every 100 ms
 
   * P3.1 = Output
   
