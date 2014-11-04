@@ -9,7 +9,7 @@ LED is connected to P3.1 with Anode connected to P3.1 and cathode connected to g
  **Tools** : e2 studio v3.0.0.22
 
         KPIT GNU RL78-ELF ToolChain v14.02
-        
+
 Code was generated using Applilet Code generator from within e2 studio
 Settings used for Code generation
 ---------------------------------
