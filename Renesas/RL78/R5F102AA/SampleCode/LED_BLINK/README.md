@@ -45,17 +45,19 @@ Populate the r_it_interrupt function in r_cg_it_user file
 
 Building the project will generate LED_BLINK.mot in the HardwareDebug folder
 
-Flashing done through Serial Port using Renesas Flash Programmer
+Flashing 
 ---------------------------------
+  Done through Serial Port using Renesas Flash Programmer 
   The microcontroller comes with a boot loader installed 
   Open Renesas Flash Programmer 
-  Create New Workspace
-  Select Microcontroller R5F102AA
-  Select Communication Interface : COM<ID>
+  Create New Workspace 
+  Select Microcontroller R5F102AA 
+  Select Communication Interface : COM<ID> 
   Browse for .mot file 
   Put the device in program mode by pressing the SW3 on board 
-  Hit the start button in Renesas Flash Programmer
-  Release the SW3 button 
+  Hit the start button in Renesas Flash Programmer 
+  Release the SW3 button  
+
 
 
 
