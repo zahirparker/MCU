@@ -8,9 +8,10 @@ LED is connected to P3.1 with Anode connected to P3.1 and cathode connected to g
 
  **Tools** : e2 studio v3.0.0.22
 
-        KPIT GNU RL78-ELF ToolChain v14.02
+   KPIT GNU RL78-ELF ToolChain v14.02
 
 Code was generated using Applilet Code generator from within e2 studio
+
 Settings used for Code generation
 ---------------------------------
   * PIOR0 = 0, PIOR1 = 0, PIOR2 = 0
@@ -29,6 +30,7 @@ After generating the code Call the required functions in R_MAIN_UserInit()
 For e.g in this case the interval Timer needs to be started and hence call the R_IT_Start() function 
 
 Populate the r_it_interrupt function in r_cg_it_user file
+
 ```
   void r_it_interrupt(void) 
   { 
