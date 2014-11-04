@@ -4,16 +4,14 @@ LED Blink
 LED Blink project for R5F102AA 
 LED is connected to P3.1 with Anode connected to P3.1 and cathode connected to ground 
 
- **Device** : R5F102AA 
+ **Device** : R5F102AA
  **Tools** : e2 studio v3.0.0.22
         KPIT GNU RL78-ELF ToolChain v14.02
         
 Code was generated using Applilet Code generator from within e2 studio
 Settings used for Code generation
 ---------------------------------
-  * PIOR0 = 0
-  PIOR1 = 0
-  PIOR2 = 0
+  * PIOR0 = 0, PIOR1 = 0, PIOR2 = 0
 
   * VDD = 5V
   
