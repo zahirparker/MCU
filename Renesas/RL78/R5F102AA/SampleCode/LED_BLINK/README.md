@@ -28,7 +28,8 @@ Settings used for Code generation
 After generating the code Call the required functions in R_MAIN_UserInit() 
 For e.g in this case the interval Timer needs to be started and hence call the R_IT_Start() function 
 
-Populate the r_it_interrupt function in r_cg_it_user file 
+Populate the r_it_interrupt function in r_cg_it_user file
+```
   void r_it_interrupt(void) 
   { 
       /* Start user code. Do not edit comment generated here */ 
@@ -42,21 +43,22 @@ Populate the r_it_interrupt function in r_cg_it_user file
     } 
       /* End user code. Do not edit comment generated here */ 
   } 
+```
 
 Building the project will generate LED_BLINK.mot in the HardwareDebug folder
 
 Flashing 
 ---------------------------------
-  Done through Serial Port using Renesas Flash Programmer 
-  The microcontroller comes with a boot loader installed 
-  Open Renesas Flash Programmer 
-  Create New Workspace 
-  Select Microcontroller R5F102AA 
-  Select Communication Interface : COM<ID> 
-  Browse for .mot file 
-  Put the device in program mode by pressing the SW3 on board 
-  Hit the start button in Renesas Flash Programmer 
-  Release the SW3 button  
+  * Done through Serial Port using Renesas Flash Programmer 
+  * The microcontroller comes with a boot loader installed 
+  * Open Renesas Flash Programmer 
+  * Create New Workspace 
+  * Select Microcontroller R5F102AA 
+  * Select Communication Interface : COM<ID> 
+  * Browse for .mot file 
+  * Put the device in program mode by pressing the SW3 on board 
+  * Hit the start button in Renesas Flash Programmer 
+  * Release the SW3 button  
 
 
 
