@@ -47,18 +47,43 @@ Settings used for Code generation
 
 Define the following globals:
  * static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};
- * uint8_t g_Uart0RxBuf;    // 1 byte RX Buffer
- * MD_STATUS g_Uart0TxEnd;	 // Signals end of Tx 	
+ * uint8_t g_Uart0RxBuf;     /*  1 byte RX Buffer */
+ * MD_STATUS g_Uart0TxEnd;	 /* Signals end of Tx 	*/
  * extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
  * extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
 
- Set a Flag in the r_uart0_callback_sendend function
+Set a Flag in the r_uart0_callback_sendend function to indicate transmission of
+all bytes is complete
 ```
  static void r_uart0_callback_sendend(void)
 {
     /* Start user code. Do not edit comment generated here */
 	g_Uart0TxEnd = 1U;		/* Set transmission end flag */
     /* End user code. Do not edit comment generated here */
+}
+```
+
+r_uart0_interrupt_send is an interrupt subroutine.
+This gets triggered once the current byte transmission is complete
+The ISR then reads the next data in the sw tx buffer and writes to the Hardware
+register to start the transmission of the next byte.
+Once all the bytes have been transmitted the callback function r_uart0_callback_sendend() is called
+This function can the set a flag and let the application know that the
+transmission of all bytes in the sw tx buffer is complete
+
+```
+void r_uart0_interrupt_send(void)
+{
+    if (g_uart0_tx_count > 0U)
+    {
+        TXD0 = *gp_uart0_tx_address;
+        gp_uart0_tx_address++;
+        g_uart0_tx_count--;
+    }
+    else
+    {
+        r_uart0_callback_sendend();
+    }
 }
 ```
 
