@@ -2,7 +2,9 @@ HELLO WORLD
 ===
 
 Hello World project for R5F102AA 
+
 Hardware required: USB 2 serial converter on COM0 
+
  **Device** : R5F102AA
 
  **Tools** : e2 studio v3.0.0.22
@@ -24,12 +26,12 @@ Settings used for Code generation
   * Interval Timer Configured to generate an interrupt every 100 ms
   
   * Serial Array Unit 0 is used as a UART 
-  ** Single transfer mode
-  ** Data Lenght = 8 bits
-  ** Transfer direction setting : LSB first
-  ** Parity : None
-  ** Stop Bit : 1
-  ** Baud Rate : 9600
+    ** Single transfer mode
+    ** Data Lenght = 8 bits
+    ** Transfer direction setting : LSB first
+    ** Parity : None
+    ** Stop Bit : 1
+    ** Baud Rate : 9600
   
  After generating the code Call the required functions in R_MAIN_UserInit() 
 R_UART0_Start()
