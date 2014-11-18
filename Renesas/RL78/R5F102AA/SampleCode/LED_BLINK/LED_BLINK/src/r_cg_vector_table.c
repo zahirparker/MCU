@@ -28,7 +28,7 @@
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements interrupt vector.
-* Creation Date: 11/4/2014
+* Creation Date: 11/11/2014
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -43,7 +43,7 @@ Global variables and functions
 /* Set option bytes */
 #define OPTION_SECT          __attribute__ ((section (".option_bytes")))
 const uint8_t Option_Bytes[] OPTION_SECT = 
-    {0xFFU, 0xFFU, 0xE0U, 0x84U};
+    {0xEFU, 0xFFU, 0xE0U, 0x84U};
 
 /* Set security ID */
 #define SECURITYID_SECT          __attribute__ ((section (".security_id")))
@@ -61,7 +61,7 @@ const void *HardwareVectors[] VEC  = {
 #define VECT_SECT          __attribute__ ((section (".vects")))
 const void *Vectors[] VECT_SECT  = {
 	// Address 0x4
-	r_wdt_interrupt,
+	R_Dummy,
 	// Address 0x6
 	R_Dummy,
 	// Address 0x8

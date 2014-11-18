@@ -28,7 +28,7 @@
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
 * Description  : This file declares interrupt handlers.
-* Creation Date: 11/4/2014
+* Creation Date: 11/11/2014
 ***********************************************************************************************************************/
 
 #ifndef INTERRUPT_HANDLERS_H_H
@@ -49,9 +49,6 @@ Typedef definitions
 /***********************************************************************************************************************
 Global functions
 ***********************************************************************************************************************/
-
-//0x4
-void r_wdt_interrupt(void) __attribute__ ((interrupt));
 //0x38
 void r_it_interrupt(void) __attribute__ ((interrupt));
 //Hardware Vectors

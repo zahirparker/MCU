@@ -28,7 +28,7 @@
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements system initializing function.
-* Creation Date: 11/4/2014
+* Creation Date: 11/11/2014
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -37,7 +37,6 @@ Includes
 #include "r_cg_macrodriver.h"
 #include "r_cg_cgc.h"
 #include "r_cg_port.h"
-#include "r_cg_wdt.h"
 #include "r_cg_it.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
@@ -64,7 +63,6 @@ void R_Systeminit(void)
     R_CGC_Get_ResetSource();
     R_CGC_Create();
     R_PORT_Create();
-    R_WDT_Create();
     R_IT_Create();
     IAWCTL = 0x00U;
 }

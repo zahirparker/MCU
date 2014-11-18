@@ -1,8 +1,9 @@
-LED Blink
+LED Fade
 ===
 
-LED Blink project for R5F102AA 
+LED Fade project for R5F102AA 
 LED is connected to P3.1 with Anode connected to P3.1 and cathode connected to ground 
+This project uses the PWM hardware 
 
  **Device** : R5F102AA
 
@@ -23,13 +24,20 @@ Settings used for Code generation
 
   * Interval Timer working on 15KHz 
   * Interval Timer Configured to generate an interrupt every 100 ms
-
-  * P3.1 = Output
   
-After generating the code Call the required functions in R_MAIN_UserInit() 
+  * Timer Array Unit has 8 16 bit timers
+  ** Channel 0 to be configured as PWM master
+  *** Channel 0 master sets the PWM frequency. 100Hz (or 10ms)
+  ** Channel 3 to be configured as PWM slave
+  *** Channel 3 slave sets the PWM duty cycle. 50% to begin with.
+  ** Channel 3 Output on P3.1 
+  
+ After generating the code Call the required functions in R_MAIN_UserInit() 
 For e.g in this case the interval Timer needs to be started and hence call the R_IT_Start() function 
-
+R_TAU0_Channel0_Start()
 Populate the r_it_interrupt function in r_cg_it_user file
+
+Add the code for delay()
 
 ```
   void r_it_interrupt(void) 
@@ -63,6 +71,20 @@ Flashing
   * Release the SW3 button  
 
 
+
+Issues Faced
+-------------------------------------
+  * WatchDog Timer resetting the device
+  ** How to debug if the issue is due to watchdog?
+
+  * Wrong datatype selection
+  ** unsigned int vs int 
+  
+  // Read the Master Timer value
+	g_timerVal = TDR00;
+
+  // Compute 10% of the value
+	g_timerValInc = g_timerVal / 10;
 
 
 
