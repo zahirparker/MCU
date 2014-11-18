@@ -52,7 +52,7 @@ Define the following globals in r_main.c:
  * extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
  * extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
 
-Set a Flag in the **r_uart0_callback_sendend** function to indicate transmission of
+Set a Flag in the *r_uart0_callback_sendend* function to indicate transmission of
 all bytes is complete
 ```
  static void r_uart0_callback_sendend(void)
@@ -63,7 +63,7 @@ all bytes is complete
 }
 ```
 
-r_uart0_interrupt_send is an interrupt subroutine.
+*r_uart0_interrupt_send* is an interrupt subroutine.
 This gets triggered once the current byte transmission is complete
 The ISR then reads the next data in the sw tx buffer and writes to the Hardware
 register to start the transmission of the next byte.
@@ -93,6 +93,7 @@ void r_uart0_interrupt_send(void)
  while(g_Uart0TxEnd == 0);
  ```
 To receive data from UART use the following code
+Call *R_UART0_Receive*  before receiving a new message. 
 ```
 	/* Initialize the RX Buffer */
 	R_UART0_Receive(&g_Uart0RxBuf,1);
@@ -111,7 +112,80 @@ To receive data from UART use the following code
         ;
     }
 ```
+*R_UART0_Receive* function will 
+* Clear the rx count
+* Initialize the sw buffer address to first element
+* Initialize the rx length 
 
+```
+MD_STATUS R_UART0_Receive(uint8_t * const rx_buf, uint16_t rx_num)
+{
+    MD_STATUS status = MD_OK;
+
+    if (rx_num < 1U)
+    {
+        status = MD_ARGERROR;
+    }
+    else
+    {
+        g_uart0_rx_count = 0U;
+        g_uart0_rx_length = rx_num;
+        gp_uart0_rx_address = rx_buf;
+    }
+
+    return (status);
+}
+```
+
+*r_uart0_interrupt_receive* is an interrupt subroutine.
+This gets triggered whenever a byte is received on UART
+The ISR then reads the data from hardware register and puts it in the sw rx buffer 
+Once all the bytes have been received the callback function *r_uart0_callback_receiveend()* is called
+This function can then set a flag and let the application know that the
+reception of X bytes in the sw rx buffer is complete
+
+**Even though X bytes have been received in the sw rx buffer. The code here does
+not read the sw rx buffer and decrement the number of bytes available in the sw
+rx buffer. This kind of solution needs to be implemented in order to fully use
+the HW capabilities. But this code is just used to receive a 1 byte and hence we
+leave it here.
+
+A simple solution was to just call *R_UART0_Receive(&g_Uart0RxBuf,1);* to
+reinitialize the sw rx buffer for the next reception**
+
+```
+void r_uart0_interrupt_receive(void)
+{
+    uint8_t rx_data;
+    uint8_t err_type;
+    
+    err_type = (uint8_t)(SSR01 & 0x0007U);
+    SIR01 = (uint16_t)err_type;
+
+    if (err_type != 0U)
+    {
+        r_uart0_callback_error(err_type);
+    }
+    
+    rx_data = RXD0;
+
+    if (g_uart0_rx_length > g_uart0_rx_count)
+    {
+        *gp_uart0_rx_address = rx_data;
+        gp_uart0_rx_address++;
+        g_uart0_rx_count++;
+
+        if (g_uart0_rx_length == g_uart0_rx_count)
+        {
+            r_uart0_callback_receiveend();
+        }
+    }
+    else
+    {
+        r_uart0_callback_softwareoverrun(rx_data);
+    }
+}
+```
 
 Building the project will generate HELLO_WORLD.mot in the HardwareDebug folder
 
