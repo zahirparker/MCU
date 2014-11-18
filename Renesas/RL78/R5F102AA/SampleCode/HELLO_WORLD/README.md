@@ -45,14 +45,14 @@ Settings used for Code generation
 }
 ```
 
-Define the following globals:
+Define the following globals in r_main.c:
  * static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};
  * uint8_t g_Uart0RxBuf;     /*  1 byte RX Buffer */
  * MD_STATUS g_Uart0TxEnd;	 /* Signals end of Tx 	*/
  * extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
  * extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
 
-Set a Flag in the r_uart0_callback_sendend function to indicate transmission of
+Set a Flag in the **r_uart0_callback_sendend** function to indicate transmission of
 all bytes is complete
 ```
  static void r_uart0_callback_sendend(void)
