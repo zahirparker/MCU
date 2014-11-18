@@ -93,7 +93,7 @@ g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
 while(g_Uart0TxEnd == 0);
 ```
 To receive data from UART use the following code
-Call *R_UART0_Receive()*  before receiving a new message. 
+call *R_UART0_Receive()*  before receiving a new message. 
 ```
 /* Initialize the RX Buffer */
 R_UART0_Receive(&g_Uart0RxBuf,1);
@@ -109,7 +109,7 @@ R_UART0_Receive(&g_Uart0RxBuf,1);
   		/* Initialize the RX Buffer for Next Reception */
   		R_UART0_Receive(&g_Uart0RxBuf,1);
   	}
-      ;
+      
   }
 ```
 *R_UART0_Receive()* function will 
@@ -144,14 +144,14 @@ Once all the bytes have been received the callback function *r_uart0_callback_re
 This function can then set a flag and let the application know that the
 reception of X bytes in the sw rx buffer is complete
 
- **Even though X bytes have been received in the sw rx buffer. The code here does
+**Even though X bytes have been received in the sw rx buffer. The code here does
 not read the sw rx buffer and decrement the number of bytes available in the sw
 rx buffer. This kind of solution needs to be implemented in order to fully use
 the HW capabilities. But this code is just used to receive a 1 byte and hence we
-leave it here.
+leave it here.**
 
 A simple solution was to just call *R_UART0_Receive(&g_Uart0RxBuf,1);* to
-reinitialize the sw rx buffer for the next reception**
+reinitialize the sw rx buffer for the next reception
 
 ```
 void r_uart0_interrupt_receive(void)
