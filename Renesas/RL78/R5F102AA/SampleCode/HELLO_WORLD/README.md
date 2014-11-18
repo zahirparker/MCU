@@ -33,7 +33,7 @@ Settings used for Code generation
     * Stop Bit : 1
     * Baud Rate : 9600
   
- After generating the code Call the required functions in R_MAIN_UserInit() 
+After generating the code Call the required functions in *R_MAIN_UserInit()*
 
 ```
  void R_MAIN_UserInit(void)
@@ -52,7 +52,7 @@ Define the following globals in r_main.c:
  * extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
  * extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
 
-Set a Flag in the *r_uart0_callback_sendend* function to indicate transmission of
+Set a Flag in the *r_uart0_callback_sendend()* function to indicate transmission of
 all bytes is complete
 ```
  static void r_uart0_callback_sendend(void)
@@ -63,11 +63,11 @@ all bytes is complete
 }
 ```
 
-*r_uart0_interrupt_send* is an interrupt subroutine.
+*r_uart0_interrupt_send()* is an interrupt subroutine.
 This gets triggered once the current byte transmission is complete
 The ISR then reads the next data in the sw tx buffer and writes to the Hardware
 register to start the transmission of the next byte.
-Once all the bytes have been transmitted the callback function r_uart0_callback_sendend() is called
+Once all the bytes have been transmitted the callback function *r_uart0_callback_sendend()* is called
 This function can the set a flag and let the application know that the
 transmission of all bytes in the sw tx buffer is complete
 
@@ -87,32 +87,32 @@ void r_uart0_interrupt_send(void)
 }
 ```
 
- To transmit message on UART use the following
- ```
- g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
- while(g_Uart0TxEnd == 0);
- ```
+To transmit message on UART use the following
+```
+g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
+while(g_Uart0TxEnd == 0);
+```
 To receive data from UART use the following code
-Call *R_UART0_Receive*  before receiving a new message. 
+Call *R_UART0_Receive()*  before receiving a new message. 
 ```
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
+/* Initialize the RX Buffer */
+R_UART0_Receive(&g_Uart0RxBuf,1);
 
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
+  while (1U)
+  {
+  	if( g_uart0_rx_count >= g_uart0_rx_length)
+  	{
+  		/* Send the recieved char on console */
+  		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
+  		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
 
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-        ;
-    }
+  		/* Initialize the RX Buffer for Next Reception */
+  		R_UART0_Receive(&g_Uart0RxBuf,1);
+  	}
+      ;
+  }
 ```
-*R_UART0_Receive* function will 
+*R_UART0_Receive()* function will 
 * Clear the rx count
 * Initialize the sw buffer address to first element
 * Initialize the rx length 
@@ -137,14 +137,14 @@ MD_STATUS R_UART0_Receive(uint8_t * const rx_buf, uint16_t rx_num)
 }
 ```
 
-*r_uart0_interrupt_receive* is an interrupt subroutine.
+*r_uart0_interrupt_receive()* is an interrupt subroutine.
 This gets triggered whenever a byte is received on UART
 The ISR then reads the data from hardware register and puts it in the sw rx buffer 
 Once all the bytes have been received the callback function *r_uart0_callback_receiveend()* is called
 This function can then set a flag and let the application know that the
 reception of X bytes in the sw rx buffer is complete
 
-**Even though X bytes have been received in the sw rx buffer. The code here does
+ **Even though X bytes have been received in the sw rx buffer. The code here does
 not read the sw rx buffer and decrement the number of bytes available in the sw
 rx buffer. This kind of solution needs to be implemented in order to fully use
 the HW capabilities. But this code is just used to receive a 1 byte and hence we
