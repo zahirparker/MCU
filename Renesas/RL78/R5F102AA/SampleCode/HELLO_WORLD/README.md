@@ -26,21 +26,31 @@ Settings used for Code generation
   * Interval Timer Configured to generate an interrupt every 100 ms
   
   * Serial Array Unit 0 is used as a UART 
-    ** Single transfer mode
-    ** Data Lenght = 8 bits
-    ** Transfer direction setting : LSB first
-    ** Parity : None
-    ** Stop Bit : 1
-    ** Baud Rate : 9600
+    * Single transfer mode
+    * Data Lenght = 8 bits
+    * Transfer direction setting : LSB first
+    * Parity : None
+    * Stop Bit : 1
+    * Baud Rate : 9600
   
  After generating the code Call the required functions in R_MAIN_UserInit() 
-R_UART0_Start()
- Define the following globals:
- 1. static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};
- 2. uint8_t g_Uart0RxBuf;    // 1 byte RX Buffer
- 3. MD_STATUS g_Uart0TxEnd;	 // Signals end of Tx 	
- 4. extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
- 5. extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
+
+```
+ void R_MAIN_UserInit(void)
+{
+    /* Start user code. Do not edit comment generated here */
+    EI();
+    R_UART0_Start();
+    /* End user code. Do not edit comment generated here */
+}
+```
+
+Define the following globals:
+ * static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};
+ * uint8_t g_Uart0RxBuf;    // 1 byte RX Buffer
+ * MD_STATUS g_Uart0TxEnd;	 // Signals end of Tx 	
+ * extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
+ * extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
 
  Set a Flag in the r_uart0_callback_sendend function
 ```
