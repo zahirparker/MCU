@@ -23,84 +23,177 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_main.c
+* File Name    : r_cg_vector_table.c
 * Version      : CodeGenerator for RL78/G12 V2.02.00.02 [11 Feb 2014]
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements main function.
-* Creation Date: 11/11/2014
+* Description  : This file implements interrupt vector.
+* Creation Date: 4/10/2015
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "r_cg_cgc.h"
-#include "r_cg_port.h"
-#include "r_cg_serial.h"
-/* Start user code for include. Do not edit comment generated here */
-/* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
 
 /***********************************************************************************************************************
 Global variables and functions
 ***********************************************************************************************************************/
-/* Start user code for global. Do not edit comment generated here */
-static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};	/* Message for "T" */
-uint8_t g_Uart0RxBuf;		/* UART0 receive buffer */
-MD_STATUS g_Uart0TxEnd;		/* UART0 transmission end */
+/* Set option bytes */
+#define OPTION_SECT          __attribute__ ((section (".option_bytes")))
+const uint8_t Option_Bytes[] OPTION_SECT = 
+    {0xEFU, 0xFFU, 0xE0U, 0x85U};
 
-extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
-extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
+/* Set security ID */
+#define SECURITYID_SECT          __attribute__ ((section (".security_id")))
+const uint8_t Security_Id[] SECURITYID_SECT = 
+    {0x01U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U};
 
-/* End user code. Do not edit comment generated here */
-void R_MAIN_UserInit(void);
+#define VEC          __attribute__ ((section (".vec")))
+const void *HardwareVectors[] VEC  = {
+	// Address 0x0
+	PowerON_Reset,
+	// Secure for Debugging
+    (void*)0xFFFF
+};
 
+#define VECT_SECT          __attribute__ ((section (".vects")))
+const void *Vectors[] VECT_SECT  = {
+	// Address 0x4
+	R_Dummy,
+	// Address 0x6
+	R_Dummy,
+	// Address 0x8
+	R_Dummy,
+	// Address 0xA
+	R_Dummy,
+	// Address 0xC
+	R_Dummy,
+	// Address 0xE
+	R_Dummy,
+	// Address 0x10
+	R_Dummy,
+	// Address 0x12
+	R_Dummy,
+	// Address 0x14
+	r_csi20_interrupt,
+	// Address 0x16
+	R_Dummy,
+	// Address 0x18
+	R_Dummy,
+	// Address 0x1A
+	R_Dummy,
+	// Address 0x1C
+	R_Dummy,
+	// Address 0x1E
+	r_uart0_interrupt_send,
+	// Address 0x20
+	r_uart0_interrupt_receive,
+	// Address 0x22
+	R_Dummy,
+	// Address 0x24
+	R_Dummy,
+	// Address 0x26
+	R_Dummy,
+	// Address 0x28
+	R_Dummy,
+	// Address 0x2A
+	R_Dummy,
+	// Address 0x2C
+	R_Dummy,
+	// Address 0x2E
+	R_Dummy,
+	// Address 0x30
+	R_Dummy,
+	// Address 0x32
+	R_Dummy,
+	// Address 0x34
+	R_Dummy,
+	// Address 0x36
+	R_Dummy,
+	// Address 0x38
+	R_Dummy,
+	// Address 0x3A
+	R_Dummy,
+	// Address 0x3C
+	R_Dummy,
+	// Address 0x3E
+	R_Dummy,
+	// Address 0x40
+	R_Dummy,
+	// Address 0x42
+	R_Dummy,
+	// Address 0x44
+	R_Dummy,
+	// Address 0x46
+	R_Dummy,
+	// Address 0x48
+	R_Dummy,
+	// Address 0x4A
+	R_Dummy,
+	// Address 0x4C
+	R_Dummy,
+	// Address 0x4E
+	R_Dummy,
+	// Address 0x50
+	R_Dummy,
+	// Address 0x52
+	R_Dummy,
+	// Address 0x54
+	R_Dummy,
+	// Address 0x56
+	R_Dummy,
+	// Address 0x58
+	R_Dummy,
+	// Address 0x5A
+	R_Dummy,
+	// Address 0x5C
+	R_Dummy,
+	// Address 0x5E
+	R_Dummy,
+	// Address 0x60
+	R_Dummy,
+	// Address 0x62
+	R_Dummy,
+	// Address 0x64
+	R_Dummy,
+	// Address 0x66
+	R_Dummy,
+	// Address 0x68
+	R_Dummy,
+	// Address 0x6A
+	R_Dummy,
+	// Address 0x6C
+	R_Dummy,
+	// Address 0x6E
+	R_Dummy,
+	// Address 0x70
+	R_Dummy,
+	// Address 0x72
+	R_Dummy,
+	// Address 0x74
+	R_Dummy,
+	// Address 0x76
+	R_Dummy,
+	// Address 0x78
+	R_Dummy,
+	// Address 0x7A
+	R_Dummy,
+	// Address 0x7C
+	R_Dummy,
+	// Address 0x7E
+	R_Dummy,
+};
 /***********************************************************************************************************************
-* Function Name: main
-* Description  : This function implements main function.
+* Function Name: R_Dummy
+* Description  : None
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void main(void)
-{
-    R_MAIN_UserInit();
-    /* Start user code. Do not edit comment generated here */
-    /* Print Hello World on console */
-	g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
-	while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
-
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-
-    }
-    /* End user code. Do not edit comment generated here */
-}
-
-
-/***********************************************************************************************************************
-* Function Name: R_MAIN_UserInit
-* Description  : This function adds user code before implementing main function.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_MAIN_UserInit(void)
+void R_Dummy(void)
 {
     /* Start user code. Do not edit comment generated here */
-    EI();
-    R_UART0_Start();
     /* End user code. Do not edit comment generated here */
 }
 

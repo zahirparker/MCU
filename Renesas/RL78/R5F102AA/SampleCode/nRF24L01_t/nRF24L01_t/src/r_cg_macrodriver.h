@@ -23,86 +23,71 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_main.c
+* File Name    : r_cg_macrodriver.h
 * Version      : CodeGenerator for RL78/G12 V2.02.00.02 [11 Feb 2014]
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements main function.
-* Creation Date: 11/11/2014
+* Description  : This file implements general head file.
+* Creation Date: 4/10/2015
 ***********************************************************************************************************************/
 
+#ifndef STATUS_H
+#define STATUS_H
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include "r_cg_macrodriver.h"
-#include "r_cg_cgc.h"
-#include "r_cg_port.h"
-#include "r_cg_serial.h"
-/* Start user code for include. Do not edit comment generated here */
-/* End user code. Do not edit comment generated here */
-#include "r_cg_userdefine.h"
+#include "iodefine.h"
+#include "iodefine_ext.h"
+#include "r_cg_interrupt_handlers.h"
 
 /***********************************************************************************************************************
-Global variables and functions
+Macro definitions (Register bit)
 ***********************************************************************************************************************/
-/* Start user code for global. Do not edit comment generated here */
-static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};	/* Message for "T" */
-uint8_t g_Uart0RxBuf;		/* UART0 receive buffer */
-MD_STATUS g_Uart0TxEnd;		/* UART0 transmission end */
-
-extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
-extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
-
-/* End user code. Do not edit comment generated here */
-void R_MAIN_UserInit(void);
 
 /***********************************************************************************************************************
-* Function Name: main
-* Description  : This function implements main function.
-* Arguments    : None
-* Return Value : None
+Macro definitions
 ***********************************************************************************************************************/
-void main(void)
-{
-    R_MAIN_UserInit();
-    /* Start user code. Do not edit comment generated here */
-    /* Print Hello World on console */
-	g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
-	while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
+#ifndef __TYPEDEF__
+#define DI()      asm("di")
+#define EI()      asm("ei")
+#define HALT()    asm("halt")
+#define NOP()     asm("nop")
+#define STOP()    asm("stop")
+/* Status list definition */
+#define MD_STATUSBASE       (0x00U)
+#define MD_OK               (MD_STATUSBASE + 0x00U) /* register setting OK */
+#define MD_SPT              (MD_STATUSBASE + 0x01U) /* IIC stop */
+#define MD_NACK             (MD_STATUSBASE + 0x02U) /* IIC no ACK */
+#define MD_BUSY1            (MD_STATUSBASE + 0x03U) /* busy 1 */
+#define MD_BUSY2            (MD_STATUSBASE + 0x04U) /* busy 2 */
+#define MD_OVERRUN           (MD_STATUSBASE + 0x05U) /* IIC OVERRUN occur */
 
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
-
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-
-    }
-    /* End user code. Do not edit comment generated here */
-}
-
+/* Error list definition */
+#define MD_ERRORBASE        (0x80U)
+#define MD_ERROR            (MD_ERRORBASE + 0x00U)  /* error */
+#define MD_ARGERROR         (MD_ERRORBASE + 0x01U)  /* error agrument input error */
+#define MD_ERROR1           (MD_ERRORBASE + 0x02U)  /* error 1 */
+#define MD_ERROR2           (MD_ERRORBASE + 0x03U)  /* error 2 */
+#define MD_ERROR3           (MD_ERRORBASE + 0x04U)  /* error 3 */
+#define MD_ERROR4           (MD_ERRORBASE + 0x05U)  /* error 4 */
+#endif
 
 /***********************************************************************************************************************
-* Function Name: R_MAIN_UserInit
-* Description  : This function adds user code before implementing main function.
-* Arguments    : None
-* Return Value : None
+Typedef definitions
 ***********************************************************************************************************************/
-void R_MAIN_UserInit(void)
-{
-    /* Start user code. Do not edit comment generated here */
-    EI();
-    R_UART0_Start();
-    /* End user code. Do not edit comment generated here */
-}
+#ifndef __TYPEDEF__
+typedef signed char         int8_t;
+typedef unsigned char       uint8_t;
+typedef signed short        int16_t;
+typedef unsigned short      uint16_t;
+typedef signed long         int32_t;
+typedef unsigned long       uint32_t;
+typedef unsigned short      MD_STATUS;
+#define __TYPEDEF__
+#endif
 
-/* Start user code for adding. Do not edit comment generated here */
-/* End user code. Do not edit comment generated here */
+/***********************************************************************************************************************
+Global functions
+***********************************************************************************************************************/
+
+#endif

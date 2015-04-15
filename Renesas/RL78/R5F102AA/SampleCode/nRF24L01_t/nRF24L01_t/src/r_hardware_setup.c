@@ -23,12 +23,12 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_main.c
+* File Name    : r_hardware_setup.c
 * Version      : CodeGenerator for RL78/G12 V2.02.00.02 [11 Feb 2014]
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements main function.
-* Creation Date: 11/11/2014
+* Description  : This file implements system initializing function.
+* Creation Date: 4/10/2015
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -46,62 +46,40 @@ Includes
 Global variables and functions
 ***********************************************************************************************************************/
 /* Start user code for global. Do not edit comment generated here */
-static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};	/* Message for "T" */
-uint8_t g_Uart0RxBuf;		/* UART0 receive buffer */
-MD_STATUS g_Uart0TxEnd;		/* UART0 transmission end */
-
-extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
-extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
-
 /* End user code. Do not edit comment generated here */
-void R_MAIN_UserInit(void);
+int HardwareSetup(void);
+void R_Systeminit(void);
+
 
 /***********************************************************************************************************************
-* Function Name: main
-* Description  : This function implements main function.
+* Function Name: R_Systeminit
+* Description  : This function initializes every macro.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void main(void)
+void R_Systeminit(void)
 {
-    R_MAIN_UserInit();
-    /* Start user code. Do not edit comment generated here */
-    /* Print Hello World on console */
-	g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
-	while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
-
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-
-    }
-    /* End user code. Do not edit comment generated here */
+    PIOR = 0x00U;
+    R_CGC_Get_ResetSource();
+    R_CGC_Create();
+    R_PORT_Create();
+    R_SAU0_Create();
+    R_SAU1_Create();
+    IAWCTL = 0x00U;
 }
 
-
 /***********************************************************************************************************************
-* Function Name: R_MAIN_UserInit
-* Description  : This function adds user code before implementing main function.
+* Function Name: HardwareSetup
+* Description  : This function initializes hardware setting.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_MAIN_UserInit(void)
+int HardwareSetup(void)
 {
-    /* Start user code. Do not edit comment generated here */
-    EI();
-    R_UART0_Start();
-    /* End user code. Do not edit comment generated here */
+    DI();
+    R_Systeminit();
+
+    return (1U);
 }
 
 /* Start user code for adding. Do not edit comment generated here */

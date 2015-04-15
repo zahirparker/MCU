@@ -23,86 +23,42 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_main.c
+* File Name    : r_cg_interrupt_handlers.h
 * Version      : CodeGenerator for RL78/G12 V2.02.00.02 [11 Feb 2014]
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements main function.
-* Creation Date: 11/11/2014
+* Description  : This file declares interrupt handlers.
+* Creation Date: 4/10/2015
+***********************************************************************************************************************/
+
+#ifndef INTERRUPT_HANDLERS_H_H
+#define INTERRUPT_HANDLERS_H_H
+
+/***********************************************************************************************************************
+Macro definitions (Register bit)
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-Includes
+Macro definitions
 ***********************************************************************************************************************/
-#include "r_cg_macrodriver.h"
-#include "r_cg_cgc.h"
-#include "r_cg_port.h"
-#include "r_cg_serial.h"
-/* Start user code for include. Do not edit comment generated here */
-/* End user code. Do not edit comment generated here */
-#include "r_cg_userdefine.h"
 
 /***********************************************************************************************************************
-Global variables and functions
+Typedef definitions
 ***********************************************************************************************************************/
-/* Start user code for global. Do not edit comment generated here */
-static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};	/* Message for "T" */
-uint8_t g_Uart0RxBuf;		/* UART0 receive buffer */
-MD_STATUS g_Uart0TxEnd;		/* UART0 transmission end */
-
-extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
-extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
-
-/* End user code. Do not edit comment generated here */
-void R_MAIN_UserInit(void);
 
 /***********************************************************************************************************************
-* Function Name: main
-* Description  : This function implements main function.
-* Arguments    : None
-* Return Value : None
+Global functions
 ***********************************************************************************************************************/
-void main(void)
-{
-    R_MAIN_UserInit();
-    /* Start user code. Do not edit comment generated here */
-    /* Print Hello World on console */
-	g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
-	while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
+//0x14
+void r_csi20_interrupt(void) __attribute__ ((interrupt));
+//0x1E
+void r_uart0_interrupt_send(void) __attribute__ ((interrupt));
+//0x20
+void r_uart0_interrupt_receive(void) __attribute__ ((interrupt));
+//Hardware Vectors
+//0x0
+void PowerON_Reset(void) __attribute__ ((interrupt));
+//idle Vectors
+void R_Dummy(void) __attribute__ ((interrupt));
 
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
-
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-
-    }
-    /* End user code. Do not edit comment generated here */
-}
-
-
-/***********************************************************************************************************************
-* Function Name: R_MAIN_UserInit
-* Description  : This function adds user code before implementing main function.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_MAIN_UserInit(void)
-{
-    /* Start user code. Do not edit comment generated here */
-    EI();
-    R_UART0_Start();
-    /* End user code. Do not edit comment generated here */
-}
-
-/* Start user code for adding. Do not edit comment generated here */
-/* End user code. Do not edit comment generated here */
+#endif

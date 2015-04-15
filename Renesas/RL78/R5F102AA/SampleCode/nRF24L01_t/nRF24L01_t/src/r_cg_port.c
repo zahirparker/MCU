@@ -23,21 +23,19 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_main.c
+* File Name    : r_cg_port.c
 * Version      : CodeGenerator for RL78/G12 V2.02.00.02 [11 Feb 2014]
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements main function.
-* Creation Date: 11/11/2014
+* Description  : This file implements device driver for PORT module.
+* Creation Date: 4/10/2015
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "r_cg_cgc.h"
 #include "r_cg_port.h"
-#include "r_cg_serial.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -46,62 +44,23 @@ Includes
 Global variables and functions
 ***********************************************************************************************************************/
 /* Start user code for global. Do not edit comment generated here */
-static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};	/* Message for "T" */
-uint8_t g_Uart0RxBuf;		/* UART0 receive buffer */
-MD_STATUS g_Uart0TxEnd;		/* UART0 transmission end */
-
-extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
-extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
-
 /* End user code. Do not edit comment generated here */
-void R_MAIN_UserInit(void);
 
 /***********************************************************************************************************************
-* Function Name: main
-* Description  : This function implements main function.
+* Function Name: R_PORT_Create
+* Description  : This function initializes the Port I/O.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void main(void)
+void R_PORT_Create(void)
 {
-    R_MAIN_UserInit();
-    /* Start user code. Do not edit comment generated here */
-    /* Print Hello World on console */
-	g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
-	while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
-
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-
-    }
-    /* End user code. Do not edit comment generated here */
-}
-
-
-/***********************************************************************************************************************
-* Function Name: R_MAIN_UserInit
-* Description  : This function adds user code before implementing main function.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_MAIN_UserInit(void)
-{
-    /* Start user code. Do not edit comment generated here */
-    EI();
-    R_UART0_Start();
-    /* End user code. Do not edit comment generated here */
+    P3 = _00_Pn0_OUTPUT_0 | _00_Pn1_OUTPUT_0;
+    PU1 = _40_PUn6_PULLUP_ON;
+    PU4 = _01_PUn0_PULLUP_ON;
+    PU5 = _01_PUn0_PULLUP_ON;
+    PIM1 = _10_PIMn4_TTL_ON | _40_PIMn6_TTL_ON;
+    PM3 = _00_PMn0_MODE_OUTPUT | _00_PMn1_MODE_OUTPUT | _FC_PM3_DEFAULT;
+    PM5 = _01_PMn0_MODE_INPUT | _02_PMn1_NOT_USE | _FC_PM5_DEFAULT;
 }
 
 /* Start user code for adding. Do not edit comment generated here */

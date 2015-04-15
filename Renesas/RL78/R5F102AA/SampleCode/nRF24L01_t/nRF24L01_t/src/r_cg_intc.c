@@ -23,21 +23,19 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_main.c
+* File Name    : r_cg_intc.c
 * Version      : CodeGenerator for RL78/G12 V2.02.00.02 [11 Feb 2014]
 * Device(s)    : R5F102AA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements main function.
-* Creation Date: 11/11/2014
+* Description  : This file implements device driver for INTC module.
+* Creation Date: 4/10/2015
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "r_cg_cgc.h"
-#include "r_cg_port.h"
-#include "r_cg_serial.h"
+#include "r_cg_intc.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -46,62 +44,58 @@ Includes
 Global variables and functions
 ***********************************************************************************************************************/
 /* Start user code for global. Do not edit comment generated here */
-static const uint8_t messageHelloWorld[13] = {"Hello World\r\n"};	/* Message for "T" */
-uint8_t g_Uart0RxBuf;		/* UART0 receive buffer */
-MD_STATUS g_Uart0TxEnd;		/* UART0 transmission end */
-
-extern volatile uint16_t  g_uart0_rx_count;           /* uart0 receive data number */
-extern volatile uint16_t  g_uart0_rx_length;          /* uart0 receive data length */
-
 /* End user code. Do not edit comment generated here */
-void R_MAIN_UserInit(void);
 
 /***********************************************************************************************************************
-* Function Name: main
-* Description  : This function implements main function.
+* Function Name: R_INTC_Create
+* Description  : This function initializes INTP module.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void main(void)
+void R_INTC_Create(void)
 {
-    R_MAIN_UserInit();
-    /* Start user code. Do not edit comment generated here */
-    /* Print Hello World on console */
-	g_Uart0TxEnd = R_UART0_Send(messageHelloWorld, 13);
-	while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-	/* Initialize the RX Buffer */
-	R_UART0_Receive(&g_Uart0RxBuf,1);
-
-    while (1U)
-    {
-    	if( g_uart0_rx_count >= g_uart0_rx_length)
-    	{
-    		/* Send the recieved char on console */
-    		g_Uart0TxEnd = R_UART0_Send(&g_Uart0RxBuf, g_uart0_rx_length);
-    		while(g_Uart0TxEnd == 0);		/* Wait for final transmit */
-
-    		/* Initialize the RX Buffer for Next Reception */
-    		R_UART0_Receive(&g_Uart0RxBuf,1);
-    	}
-
-    }
-    /* End user code. Do not edit comment generated here */
+    PMK0 = 1U;    /* disable INTP0 operation */
+    PIF0 = 0U;    /* clear INTP0 interrupt flag */
+    PMK1 = 1U;    /* disable INTP1 operation */
+    PIF1 = 0U;    /* clear INTP1 interrupt flag */
+    PMK2 = 1U;    /* disable INTP2 operation */
+    PIF2 = 0U;    /* clear INTP2 interrupt flag */
+    PMK3 = 1U;    /* disable INTP3 operation */
+    PIF3 = 0U;    /* clear INTP3 interrupt flag */
+    PMK4 = 1U;    /* disable INTP4 operation */
+    PIF4 = 0U;    /* clear INTP4 interrupt flag */
+    PMK5 = 1U;    /* disable INTP5 operation */
+    PIF5 = 0U;    /* clear INTP5 interrupt flag */
+    /* Set INTP5 low priority */
+    PPR15 = 1U;
+    PPR05 = 1U;
+    EGN0 = _20_INTP5_EDGE_FALLING_SEL;
+    /* Set INTP5 pin */
+    PM1 |= 0x40U;
 }
 
-
 /***********************************************************************************************************************
-* Function Name: R_MAIN_UserInit
-* Description  : This function adds user code before implementing main function.
+* Function Name: R_INTC5_Start
+* Description  : This function clears INTP5 interrupt flag and enables interrupt.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_MAIN_UserInit(void)
+void R_INTC5_Start(void)
 {
-    /* Start user code. Do not edit comment generated here */
-    EI();
-    R_UART0_Start();
-    /* End user code. Do not edit comment generated here */
+    PIF5 = 0U;    /* clear INTP5 interrupt flag */
+    PMK5 = 0U;    /* enable INTP5 interrupt */
+}
+
+/***********************************************************************************************************************
+* Function Name: R_INTC5_Stop
+* Description  : This function disables INTP5 interrupt and clears interrupt flag.
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+void R_INTC5_Stop(void)
+{
+    PMK5 = 1U;    /* disable INTP5 interrupt */
+    PIF5 = 0U;    /* clear INTP5 interrupt flag */
 }
 
 /* Start user code for adding. Do not edit comment generated here */
